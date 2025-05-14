@@ -20,7 +20,7 @@ jobs:
           pwd
           ls -alh
           find . -name pubspec.yaml
-        # Helps confirm if pubspec.yaml exists and where
+        # Confirms pubspec.yaml location
 
       - name: Set up JDK 17
         uses: actions/setup-java@v4
@@ -46,26 +46,26 @@ jobs:
 
       - name: Install dependencies
         run: flutter pub get
-        working-directory: ./app # REPLACE with your Flutter project directory, e.g., ./app or ./flutter_project
+        # No working-directory; assumes project is in root
 
       - name: Build APK
         run: flutter build apk --release
-        working-directory: ./app # REPLACE with your Flutter project directory
+        # No working-directory
 
       - name: Debug APK Path
         run: ls -alh build/app/outputs/flutter-apk/
-        working-directory: ./app # REPLACE with your Flutter project directory
         if: always() # Run even if build fails
+        # No working-directory
 
       - name: Verify Flutter Environment
         run: flutter doctor --verbose
-        working-directory: ./app # REPLACE with your Flutter project directory
         if: failure() # Run only on failure
+        # No working-directory
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
           name: release-apk
-          path: app/build/app/outputs/flutter-apk/app-release.apk # Adjust path based on working-directory
+          path: build/app/outputs/flutter-apk/app-release.apk # Path relative to root
           if-no-files-found: error
           retention-days: 30
