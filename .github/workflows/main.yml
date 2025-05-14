@@ -1,4 +1,4 @@
-name: Flutter Android Build
+name: Build Android APK
 
 on:
   push:
@@ -11,19 +11,19 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repository
+      - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Set up Java
+      - name: Set up JDK 17
         uses: actions/setup-java@v3
         with:
-          distribution: 'temurin'
           java-version: '17'
+          distribution: 'temurin'
 
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: '3.13.0'
+          flutter-version: '3.16.5'
 
       - name: Install dependencies
         run: flutter pub get
@@ -32,7 +32,7 @@ jobs:
         run: flutter build apk --release
 
       - name: Upload APK
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@3c36c6f801e6b7f6b2c5a7b768e2d6b54c9e5d98
         with:
           name: release-apk
           path: build/app/outputs/flutter-apk/app-release.apk
