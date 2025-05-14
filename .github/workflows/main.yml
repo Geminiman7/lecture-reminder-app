@@ -1,15 +1,16 @@
-name: Build Kivy APK
+name: Build APK
 
 on:
   push:
-    branches: [main]
+    branches:
+      - main
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
 
     steps:
-      - name: Checkout Code
+      - name: Checkout code
         uses: actions/checkout@v3
 
       - name: Set up Python
@@ -20,26 +21,42 @@ jobs:
       - name: Install dependencies
         run: |
           sudo apt update
-          sudo apt install -y python3-pip python3-setuptools zip unzip openjdk-17-jdk libffi-dev libssl-dev \
-              libsqlite3-dev libjpeg-dev zlib1g-dev autoconf automake libtool pkg-config \
-              libncurses5 libncurses5-dev libncursesw5 libncursesw5-dev
+          sudo apt install -y \
+            python3-pip \
+            zip \
+            unzip \
+            openjdk-11-jdk \
+            libsdl2-dev \
+            libsdl2-image-dev \
+            libsdl2-mixer-dev \
+            libsdl2-ttf-dev \
+            libportmidi-dev \
+            libswscale-dev \
+            libavformat-dev \
+            libavcodec-dev \
+            zlib1g-dev \
+            libgstreamer1.0 \
+            gstreamer1.0-plugins-base \
+            gstreamer1.0-plugins-good \
+            python3-setuptools \
+            python3-wheel \
+            libmtdev-dev \
+            libgl1-mesa-dev \
+            libgles2-mesa-dev \
+            libffi-dev \
+            libssl-dev \
+            autoconf \
+            libtool \
+            pkg-config \
+            git \
+            build-essential \
+            cmake
 
-          pip install --upgrade pip
-          pip install buildozer cython virtualenv
-
-      - name: Create buildozer.spec (if not exists)
+      - name: Install buildozer
         run: |
-          if [ ! -f buildozer.spec ]; then
-            buildozer init
-          fi
+          pip install --upgrade pip
+          pip install buildozer
 
       - name: Build APK
         run: |
-          buildozer android debug
-
-      - name: Upload APK to GitHub Releases
-        uses: softprops/action-gh-release@v1
-        with:
-          files: bin/*.apk
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          buildozer -v android debug
