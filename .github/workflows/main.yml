@@ -41,16 +41,16 @@ jobs:
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: '3.16.5' # Update to 3.24.x if compatible
+          flutter-version: '3.24.x' # Updated to the latest stable version
           channel: 'stable'
-
-      - name: Disable Flutter analytics
-        run: flutter --disable-analytics
-        # No working-directory; assumes root
 
       - name: Install dependencies
         run: flutter pub get
-        # No working-directory
+        # No working-directory; assumes project is in root
+
+      - name: List Project Files (Debugging Step)
+        run: ls -R
+        # Added for debugging to confirm the presence of required files
 
       - name: Build APK
         run: flutter build apk --release
@@ -70,6 +70,6 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: release-apk
-          path: build/app/outputs/flutter-apk/app-release.apk
+          path: build/app/outputs/flutter-apk/app-release.apk # Path relative to root
           if-no-files-found: error
           retention-days: 30
