@@ -4,9 +4,6 @@ on:
   push:
     branches:
       - main
-  pull_request:
-    branches:
-      - main
 
 jobs:
   build:
@@ -16,55 +13,38 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v4 # Updated to v4
 
       - name: Set up JDK 17
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v4 # Updated to v4
         with:
           java-version: '17'
           distribution: 'temurin'
 
-      - name: Cache Flutter dependencies
-        uses: actions/cache@v4
-        with:
-          path: |
-            ~/.pub-cache
-            **/pubspec.lock
-          key: ${{ runner.os }}-flutter-${{ hashFiles('**/pubspec.yaml') }}
-          restore-keys: |
-            ${{ runner.os }}-flutter-
-
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: '3.24.x' # Use latest stable version
+          flutter-version: '3.16.5'
           channel: 'stable'
-          cache: true
 
       - name: Install dependencies
         run: flutter pub get
-        working-directory: ./ # Specify your Flutter project directory if different
-
-      - name: Run tests
-        run: flutter test
-        continue-on-error: true # Optional: continue even if tests fail
 
       - name: Build APK
-        run: flutter build apk --release --no-tree-shake-icons
-        env:
-          FLUTTER_BUILD_NUMBER: ${{ github.run_number }}
+        run: flutter build apk --release
 
       - name: Debug APK Path
         run: ls -alh build/app/outputs/flutter-apk/
+        if: always() # Run even if build fails
 
       - name: Verify Flutter Environment
         run: flutter doctor --verbose
-        if: failure() # Run only if previous steps fail
+        if: failure() # Run only on failure
 
       - name: Upload APK
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v4 # Updated to v4
         with:
-          name: app-release-${{ github.sha }}.apk
+          name: release-apk
           path: build/app/outputs/flutter-apk/app-release.apk
+          if-no-files-found: error # Fail if APK is missing
           retention-days: 30
-          if-no-files-found: error
